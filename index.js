@@ -1,31 +1,18 @@
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
+const { Client, GatewayIntentBits } = require('discord.js');
 
-app.use(express.json());
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+client.once('ready', () => {
+  console.log(`✓ Bot logged in as ${client.user.tag}`);
 });
 
-// Welcome endpoint
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Airport City API' });
+client.on('messageCreate', (message) => {
+  if (message.author.bot) return;
+
+  if (message.content === '!ping') {
+    message.reply('Pong!');
+  }
 });
 
-// Example API endpoint
-app.get('/api/airports', (req, res) => {
-  res.json({
-    airports: [
-      { id: 1, name: 'Main Airport', code: 'MAI' },
-      { id: 2, name: 'Secondary Airport', code: 'SEC' }
-    ]
-  });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Airport City API running on port ${PORT}`);
-});
+client.login(process.env.DISCORD_TOKEN);
 
